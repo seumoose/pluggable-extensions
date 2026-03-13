@@ -1,0 +1,4 @@
+{
+  "baseEndpoint": "https:/bar.com",
+  "retryLimit": 5
+}

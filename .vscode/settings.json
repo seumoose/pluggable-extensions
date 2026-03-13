@@ -1,0 +1,28 @@
+{
+  "editor.formatOnSave": true,
+  "[java]": {
+    "editor.tabSize": 4,
+    "editor.defaultFormatter": "redhat.java",
+    "editor.insertSpaces": false,
+    "editor.detectIndentation": false
+  },
+  "java.completion.importOrder": ["", "javax", "java", "#"],
+  "java.completion.guessMethodArguments": "insertBestGuessedArguments",
+  "java.configuration.updateBuildConfiguration": "interactive",
+  "java.configuration.maven.userSettings": "${workspaceFolder}/.mvn/settings.xml",
+  "java.format.enabled": true,
+  "java.referencesCodeLens.enabled": true,
+  "java.codeGeneration.generateComments": true,
+  "java.debug.settings.onBuildFailureProceed": true,
+  "java.compile.nullAnalysis.mode": "automatic",
+  "java.project.referencedLibraries": [
+    "target/generated-sources/annotations/**/*.java"
+  ],
+  "[json]": {
+    "editor.tabSize": 2,
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[xml]": {
+    "editor.defaultFormatter": "redhat.vscode-xml"
+  }
+}

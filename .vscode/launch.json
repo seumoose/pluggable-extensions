@@ -1,0 +1,15 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "java",
+      "name": "Java Application",
+      "request": "launch",
+      "cwd": "${workspaceFolder}",
+      "console": "internalConsole",
+      "mainClass": "com.seumoose.launcher.ApplicationLauncher",
+      "projectName": "launcher",
+      "env": {}
+    }
+  ]
+}

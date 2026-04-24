@@ -19,6 +19,6 @@ public class ExtensionA implements IPlugin {
 	@Override
 	public void execute() {
 		LOGGER.info("Executing inside of extension A concrete implementation with example configuration {}",
-				configuration.getBaseEndpoint());
+				configuration.toString());
 	}
 }

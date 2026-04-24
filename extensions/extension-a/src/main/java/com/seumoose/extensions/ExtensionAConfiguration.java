@@ -4,10 +4,12 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.seumoose.core.interfaces.IPluginConfiguration;
 import lombok.Getter;
+import lombok.ToString;
 
 import java.net.URI;
 
 @Getter
+@ToString
 public class ExtensionAConfiguration implements IPluginConfiguration {
 	private final URI baseEndpoint;
 	private final int retryLimit;

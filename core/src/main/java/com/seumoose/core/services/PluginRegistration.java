@@ -1,7 +1,9 @@
 package com.seumoose.core.services;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.seumoose.core.ModuleConstants;
 import com.seumoose.core.interfaces.IPlugin;
 import com.seumoose.core.interfaces.IPluginConfiguration;
@@ -10,7 +12,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.text.MessageFormat;
@@ -19,6 +20,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.ServiceConfigurationError;
 import java.util.ServiceLoader;
@@ -28,9 +30,11 @@ import java.util.stream.Stream;
 public class PluginRegistration {
 	private static final Logger LOGGER = LoggerFactory.getLogger(PluginRegistration.class);
 	private static final Path CONFIGURATION_PATH_ROOT = resolveConfigurationRoot();
+	private static final String DEFAULT_CONFIGURATION_FILE = "default.json";
 
 	private final Map<String, IPluginProvider<?>> pluginFamilyProviderMapping = new HashMap<>();
 	private final Map<String, Map<String, IPlugin>> pluginFamilyVariantMapping = new HashMap<>();
+	private final Map<String, ObjectNode> pluginFamilyDefaults = new HashMap<>();
 	private final ObjectMapper mapper = new ObjectMapper()
 			.findAndRegisterModules()
 			.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
@@ -118,9 +122,26 @@ public class PluginRegistration {
 		Map<String, IPlugin> pluginVariants = pluginFamilyVariantMapping
 				.computeIfAbsent(pluginFamily, k -> new HashMap<>());
 
+		// load family default configuration once and cache it
+		if (!pluginFamilyDefaults.containsKey(pluginFamily)) {
+			Path defaultConfigPath = familyDirectory.resolve(DEFAULT_CONFIGURATION_FILE);
+
+			if (Files.isRegularFile(defaultConfigPath)) {
+				try {
+					ObjectNode defaultNode = (ObjectNode) mapper.readTree(defaultConfigPath.toFile());
+					pluginFamilyDefaults.put(pluginFamily, defaultNode);
+					LOGGER.info("Loaded default configuration for plugin family {}", pluginFamily);
+				} catch (IOException e) {
+					LOGGER.error("Failed to read default configuration for plugin family {} - skipping defaults",
+							pluginFamily);
+				}
+			}
+		}
+
 		try (Stream<Path> paths = Files.list(familyDirectory)) {
 			List<Path> filteredPaths = paths
 					.filter(PluginRegistration::isJsonFile)
+					.filter(p -> !p.getFileName().toString().equals(DEFAULT_CONFIGURATION_FILE))
 					.toList();
 
 			for (Path path : filteredPaths) {
@@ -134,8 +155,12 @@ public class PluginRegistration {
 				}
 
 				try {
-					// TODO: nesting
-					pluginConfiguration = mapper.readValue(path.toFile(), pluginProvider.configurationType());
+					ObjectNode variantNode = (ObjectNode) mapper.readTree(path.toFile());
+					ObjectNode mergedNode = pluginFamilyDefaults.containsKey(pluginFamily)
+							? deepMerge(pluginFamilyDefaults.get(pluginFamily).deepCopy(), variantNode)
+							: variantNode;
+
+					pluginConfiguration = mapper.treeToValue(mergedNode, pluginProvider.configurationType());
 				} catch (IOException exception) {
 					String errorMessage = MessageFormat.format(
 							"Configuration type mismatch for plugin provider {0} when reading in {1} - skipping variant registration",
@@ -164,18 +189,46 @@ public class PluginRegistration {
 				pluginFamily);
 	}
 
+	private static ObjectNode deepMerge(ObjectNode base, ObjectNode override) {
+		override.fields().forEachRemaining((Entry<String, JsonNode> entry) -> {
+			String fieldName = entry.getKey();
+			JsonNode overrideValue = entry.getValue();
+			JsonNode baseValue = base.get(fieldName);
+
+			// prevent overwriting complex base values with a primitive overrides
+			if (baseValue != null && baseValue.isObject() && !overrideValue.isObject()) {
+				LOGGER.warn("Cannot replace complex base value object with a scalar/array - skipping {} override",
+						fieldName);
+				return;
+			}
+
+			// recursively call until base value is null - set value to override
+			if (baseValue != null && baseValue.isObject() && overrideValue.isObject()) {
+				deepMerge((ObjectNode) baseValue, (ObjectNode) overrideValue);
+			} else {
+				base.set(fieldName, overrideValue);
+			}
+		});
+
+		return base;
+	}
+
 	private static Path resolveConfigurationRoot() {
 		String envPath = System.getenv(ModuleConstants.CONFIGURATION_PATH_ROOT_ENV);
+		Path configPath = Path.of(System.getProperty("user.home"), "config");
+
 		if (envPath != null) {
-			return Path.of(envPath);
+			configPath = Path.of(envPath);
 		}
 
-		URL resource = PluginRegistration.class.getClassLoader().getResource("config/");
-		if (resource == null) {
-			throw new IllegalStateException("Default configuration directory 'config/' not found on classpath");
+		if (!Files.isDirectory(configPath)) {
+			String errorMessage = MessageFormat.format("Configuration root `{0}` is not a directory", configPath);
+
+			LOGGER.error(errorMessage);
+			throw new IllegalStateException(errorMessage);
 		}
 
-		return Path.of(resource.getPath());
+		return configPath;
 	}
 
 	private static boolean isJsonFile(Path path) {

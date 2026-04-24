@@ -30,7 +30,7 @@ import java.util.stream.Stream;
 public class PluginRegistration {
 	private static final Logger LOGGER = LoggerFactory.getLogger(PluginRegistration.class);
 	private static final Path CONFIGURATION_PATH_ROOT = resolveConfigurationRoot();
-	private static final String DEFAULT_CONFIGURATION_FILE = "default.json";
+	private static final String DEFAULT_CONFIGURATION_FILE = "defaults.json";
 
 	private final Map<String, IPluginProvider<?>> pluginFamilyProviderMapping = new HashMap<>();
 	private final Map<String, Map<String, IPlugin>> pluginFamilyVariantMapping = new HashMap<>();
@@ -214,11 +214,16 @@ public class PluginRegistration {
 	}
 
 	private static Path resolveConfigurationRoot() {
-		String envPath = System.getenv(ModuleConstants.CONFIGURATION_PATH_ROOT_ENV);
+		String envPath = System.getenv(ModuleConstants.CONFIGURATION_PATH_ROOT);
+		String propertyPath = System.getProperty(ModuleConstants.CONFIGURATION_PATH_ROOT);
 		Path configPath = Path.of(System.getProperty("user.home"), "config");
 
 		if (envPath != null) {
 			configPath = Path.of(envPath);
+		}
+
+		if (propertyPath != null) {
+			configPath = Path.of(propertyPath);
 		}
 
 		if (!Files.isDirectory(configPath)) {

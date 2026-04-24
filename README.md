@@ -1,23 +1,68 @@
 # Pluggable Extensions
 
-Playground repository for experimenting around with multi-module Maven setup and the ServiceLoader class in Java.
+Playground repository for experimenting with multi-module Maven setup and the `ServiceLoader` class in Java.
 
 ## Table of Contents
 
-- [Instillation](#instillation)
-- [Further Instillation & Configuration](#further-instillation--configuration)
 - [About](#about)
-
-## Instillation
-
-This project uses Maven and is setup to compile to Java 23 (requiring a JDK 23 flavour) - both of these can be installed from their respective websites, or, if using a package manager i.e. homebrew on macOS, installed with `brew install maven` and `brew install openjdk@23` respectively.
-
-## Further Instillation & Configuration
-
-This project sets version files for both `jenv` Java version and `mvnvm` maven version for ease of use found in the `.java-version` and `mvnvm.properties` files. Both of these version managers can be installed from their respective websites, or, if using a package manager i.e. homebrew on macOS, installed with `brew install jenv` and `brew install mvnvm` respectively.
-
-jenv needs further shell configuration which can be found in their GitHub repository [here](https://github.com/jenv/jenv?tab=readme-ov-file#12-configuring-your-shell) at which point the Java version downloaded earlier can be added with the `jenv add` command i.e. `jenv add /opt/homebrew/opt/openjdk@23`.
+- [Prerequisites](#prerequisites)
+- [Configuration](#configuration)
+- [Building](#building)
+- [Running](#running)
 
 ## About
 
-This is a PoC project that looks to use the `ServiceLoader` class to dynamically load and register custom plugins without any direct hardcoding required. Program starts at [ApplicationLauncher.java](launcher/src/main/java/com/seumoose/launcher/ApplicationLauncher.java).
+A proof-of-concept project that uses Java's `ServiceLoader` to dynamically discover and register plugin implementations at runtime — no hardcoded references required. Application entry point is [ApplicationLauncher.java](launcher/src/main/java/com/seumoose/launcher/ApplicationLauncher.java).
+
+Plugins are grouped into families, each representing a type of capability (e.g. a weather plugin family). A family can have multiple variants, each configured independently to target different endpoints, retry limits, etc. At startup, variant configuration files are read from disk, merged with per-family defaults, and used to initialise each plugin instance.
+
+## Prerequisites
+
+- **JDK 23** — install from [the official site](https://jdk.java.net/) or via Homebrew: `brew install openjdk@23`
+- **Maven 3** — install from [the official site](https://maven.apache.org/) or via Homebrew: `brew install maven`
+
+### Optional version managers
+
+This project includes version files for [`jenv`](https://github.com/jenv/jenv) (`.java-version`) and [`mvnvm`](https://github.com/mvnvm/mvnvm) (`mvnvm.properties`). Both can be installed via Homebrew:
+
+```bash
+brew install jenv mvnvm
+```
+
+`jenv` requires additional [shell configuration](https://github.com/jenv/jenv?tab=readme-ov-file#12-configuring-your-shell), after which the installed JDK can be registered with:
+
+```bash
+jenv add /opt/homebrew/opt/openjdk@23
+```
+
+## Configuration
+
+The application reads plugin configuration files from a root directory. The path is resolved in order of precedence:
+
+1. **JVM system property** — `-DCONFIGURATION_ROOT_PATH=<path>`
+2. **Environment variable** — `CONFIGURATION_ROOT_PATH=<path>`
+3. **Default** — `~/config`
+
+The path must point to an existing directory. Each plugin implementation (family) has its own subdirectory containing a `defaults.json` (shared base values) file and one or more variant files that are merged on top of the default plugin configuration values when read in. An example of such can be found in the [Extension A defaults](/config/ExtensionA/defaults.json).
+
+## Building
+
+From the project root:
+
+```bash
+mvn package
+```
+
+This produces a thin jar for the launcher along with all dependency jars in `launcher/target/lib/`.
+
+## Running
+
+### CLI
+
+```bash
+java -DCONFIGURATION_ROOT_PATH="$(pwd)/config" -jar launcher/target/launcher-1.0-SNAPSHOT.jar
+```
+
+### VS Code
+
+The [launch configuration](.vscode/launch.json) sets `CONFIGURATION_ROOT_PATH` to the workspace `config/` directory. Open the Run and Debug panel (`⇧⌘D`), select **Java Application**, and press `F5`.

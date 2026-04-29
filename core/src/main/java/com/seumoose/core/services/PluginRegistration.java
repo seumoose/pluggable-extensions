@@ -5,9 +5,14 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.seumoose.core.ModuleConstants;
+import com.seumoose.core.interfaces.IConsumerPlugin;
+import com.seumoose.core.interfaces.IFunctionPlugin;
 import com.seumoose.core.interfaces.IPlugin;
 import com.seumoose.core.interfaces.IPluginConfiguration;
 import com.seumoose.core.interfaces.IPluginProvider;
+import com.seumoose.core.interfaces.IPredicatePlugin;
+import com.seumoose.core.interfaces.IRunnablePlugin;
+import com.seumoose.core.interfaces.ISupplierPlugin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,7 +20,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.text.MessageFormat;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -40,11 +44,12 @@ public class PluginRegistration {
 			.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
 	private PluginRegistration() {
-		registerPluginProviders(Collections.emptySet());
+		// registers all plugins and plugin variants - do we want this?
+		// registerPluginProviders(Collections.emptySet());
 
-		for (IPluginProvider<?> provider : pluginFamilyProviderMapping.values()) {
-			registerPluginVariants(provider);
-		}
+		// for (IPluginProvider<?> provider : pluginFamilyProviderMapping.values()) {
+		// registerPluginVariants(provider);
+		// }
 	}
 
 	private static class Holder {
@@ -74,6 +79,40 @@ public class PluginRegistration {
 
 		return Optional.ofNullable(pluginFamilyVariantMapping.get(family))
 				.map((Map<String, IPlugin> variants) -> variants.get(variant));
+	}
+
+	public synchronized Optional<IRunnablePlugin> getRunnablePlugin(String family, String variant) {
+		return getPlugin(family, variant)
+				.filter(IRunnablePlugin.class::isInstance)
+				.map(IRunnablePlugin.class::cast);
+	}
+
+	@SuppressWarnings("unchecked")
+	public synchronized <T> Optional<IConsumerPlugin<T>> getConsumerPlugin(String family, String variant) {
+		return getPlugin(family, variant)
+				.filter(IConsumerPlugin.class::isInstance)
+				.map(p -> (IConsumerPlugin<T>) p);
+	}
+
+	@SuppressWarnings("unchecked")
+	public synchronized <R> Optional<ISupplierPlugin<R>> getSupplierPlugin(String family, String variant) {
+		return getPlugin(family, variant)
+				.filter(ISupplierPlugin.class::isInstance)
+				.map(p -> (ISupplierPlugin<R>) p);
+	}
+
+	@SuppressWarnings("unchecked")
+	public synchronized <T, R> Optional<IFunctionPlugin<T, R>> getFunctionPlugin(String family, String variant) {
+		return getPlugin(family, variant)
+				.filter(IFunctionPlugin.class::isInstance)
+				.map(p -> (IFunctionPlugin<T, R>) p);
+	}
+
+	@SuppressWarnings("unchecked")
+	public synchronized <T> Optional<IPredicatePlugin<T>> getPredicatePlugin(String family, String variant) {
+		return getPlugin(family, variant)
+				.filter(IPredicatePlugin.class::isInstance)
+				.map(p -> (IPredicatePlugin<T>) p);
 	}
 
 	@SuppressWarnings("rawtypes")

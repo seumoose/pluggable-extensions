@@ -1,11 +1,10 @@
 package com.seumoose.core.interfaces;
 
 /**
- * Simple interface that defines the contract for plugin implementations.
+ * Marker interface for all plugin implementations. Concrete plugins should
+ * implement one of the functional sub-interfaces (e.g. {@link IRunnablePlugin},
+ * {@link IConsumerPlugin}, {@link ISupplierPlugin}, {@link IFunctionPlugin},
+ * {@link IPredicatePlugin}).
  */
 public interface IPlugin {
-	/**
-	 * Executes the specific plugin implementation.
-	 */
-	public void execute();
 }

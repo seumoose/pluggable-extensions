@@ -20,6 +20,7 @@
   <modules>
     <module>assembly</module>
     <module>extension-a</module>
+    <module>extension-b</module>
   </modules>
 
   <!-- Artifacts specified here will always be included as a dependency of the child module(s) -->

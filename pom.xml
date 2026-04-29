@@ -12,10 +12,10 @@
   <description>Playground repository for experimenting around with multi-module Maven setup and the ServiceLoader class in Java.</description>
 
   <properties>
-    <java.version>23</java.version>
-    <maven.compiler.source>23</maven.compiler.source>
-    <maven.compiler.target>23</maven.compiler.target>
-    <lombok.version>1.18.36</lombok.version>
+    <java.version>25</java.version>
+    <maven.compiler.source>25</maven.compiler.source>
+    <maven.compiler.target>25</maven.compiler.target>
+    <lombok.version>1.18.46</lombok.version>
     <jackson.version>2.18.2</jackson.version>
     <logback-classic.version>1.5.16</logback-classic.version>
     <logback-access.version>2.0.3</logback-access.version>
@@ -117,7 +117,7 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-compiler-plugin</artifactId>
-          <version>3.8.0</version>
+          <version>3.15.0</version>
           <configuration>
             <annotationProcessorPaths>
               <path>
@@ -132,19 +132,19 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-surefire-plugin</artifactId>
-          <version>2.22.1</version>
+          <version>3.5.5</version>
         </plugin>
 
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-site-plugin</artifactId>
-          <version>3.7.1</version>
+          <version>3.21.1</version>
         </plugin>
 
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-project-info-reports-plugin</artifactId>
-          <version>3.0.0</version>
+          <version>3.9.0</version>
         </plugin>
       </plugins>
     </pluginManagement>

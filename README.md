@@ -18,7 +18,7 @@ Plugins are grouped into families, each representing a type of capability (e.g. 
 
 ## Prerequisites
 
-- **JDK 23** — install from [the official site](https://jdk.java.net/) or via Homebrew: `brew install openjdk@23`
+- **JDK 25** — install from [the official site](https://jdk.java.net/) or via Homebrew: `brew install openjdk@25`
 - **Maven 3** — install from [the official site](https://maven.apache.org/) or via Homebrew: `brew install maven`
 
 ### Optional version managers
@@ -32,7 +32,7 @@ brew install jenv mvnvm
 `jenv` requires additional [shell configuration](https://github.com/jenv/jenv?tab=readme-ov-file#12-configuring-your-shell), after which the installed JDK can be registered with:
 
 ```bash
-jenv add /opt/homebrew/opt/openjdk@23
+jenv add /opt/homebrew/opt/openjdk@25
 ```
 
 ## Configuration

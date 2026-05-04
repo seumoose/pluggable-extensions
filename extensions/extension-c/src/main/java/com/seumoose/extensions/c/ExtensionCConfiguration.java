@@ -2,13 +2,13 @@ package com.seumoose.extensions.c;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.seumoose.core.interfaces.IPluginConfiguration;
+import com.seumoose.core.interfaces.IExtensionConfiguration;
 import lombok.Getter;
 import lombok.ToString;
 
 @Getter
 @ToString
-public class ExtensionCConfiguration implements IPluginConfiguration {
+public class ExtensionCConfiguration implements IExtensionConfiguration {
 	private final String greeting;
 	private final String target;
 

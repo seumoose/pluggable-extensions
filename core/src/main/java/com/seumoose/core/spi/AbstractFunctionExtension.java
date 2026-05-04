@@ -1,19 +1,19 @@
 package com.seumoose.core.spi;
 
-import com.seumoose.core.interfaces.IFunctionPlugin;
+import com.seumoose.core.interfaces.IFunctionExtension;
 import com.seumoose.core.utility.TypeGuard;
 
 /**
- * A plugin that accepts an input and produces an output.
+ * A extension that accepts an input and produces an output.
  *
- * @param <T> the type of input accepted by the plugin.
- * @param <R> the type of result produced by the plugin.
+ * @param <T> the type of input accepted by the extension.
+ * @param <R> the type of result produced by the extension.
  */
-public abstract class AbstractFunctionPlugin<T, R> implements IFunctionPlugin<T, R> {
+public abstract class AbstractFunctionExtension<T, R> implements IFunctionExtension<T, R> {
 	private final Class<T> inputType;
 	private final Class<R> responseType;
 
-	protected AbstractFunctionPlugin(Class<T> inputType, Class<R> returnType) {
+	protected AbstractFunctionExtension(Class<T> inputType, Class<R> returnType) {
 		this.inputType = inputType;
 		this.responseType = returnType;
 	}

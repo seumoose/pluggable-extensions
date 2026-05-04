@@ -1,11 +1,11 @@
 package com.seumoose.extensions.a;
 
-import com.seumoose.core.interfaces.IPlugin;
-import com.seumoose.core.interfaces.IPluginProvider;
+import com.seumoose.core.interfaces.IExtension;
+import com.seumoose.core.interfaces.IExtensionProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ExtensionAProvider implements IPluginProvider<ExtensionAConfiguration> {
+public class ExtensionAProvider implements IExtensionProvider<ExtensionAConfiguration> {
 	private static final Logger LOGGER = LoggerFactory.getLogger(ExtensionAProvider.class);
 
 	/**
@@ -28,9 +28,7 @@ public class ExtensionAProvider implements IPluginProvider<ExtensionAConfigurati
 	 * {@inheritDoc}
 	 */
 	@Override
-	public IPlugin create(ExtensionAConfiguration configuration) {
-		LOGGER.info("{} initialised successfully", getFamily());
-
+	public IExtension create(ExtensionAConfiguration configuration) {
 		return new ExtensionA(configuration);
 	}
 }

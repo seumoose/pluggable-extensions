@@ -1,43 +1,47 @@
 package com.seumoose.launcher;
 
-import com.seumoose.core.interfaces.IPredicatePlugin;
-import com.seumoose.core.interfaces.IRunnablePlugin;
-import com.seumoose.core.interfaces.ISupplierPlugin;
-import com.seumoose.core.services.PluginRegistration;
+import com.seumoose.core.interfaces.IPredicateExtension;
+import com.seumoose.core.interfaces.IRunnableExtension;
+import com.seumoose.core.interfaces.ISupplierExtension;
+import com.seumoose.core.services.ExtensionRegistration;
 
 import java.io.IOException;
 import java.util.Optional;
 
 public class ApplicationLauncher {
 	public static void main(String[] args) throws IOException {
-		PluginRegistration pluginRegistration = PluginRegistration.getInstance();
+		ExtensionRegistration extensionRegistration = ExtensionRegistration.getInstance();
 
-		Optional<IRunnablePlugin> extensionAPluginVariant1 = pluginRegistration.getRunnablePlugin("ExtensionA",
+		Optional<IRunnableExtension> extensionAExtensionVariant1 = extensionRegistration.getRunnableExtension(
+				"ExtensionA",
 				"Variant1");
-		Optional<IRunnablePlugin> extensionAPluginVariant2 = pluginRegistration.getRunnablePlugin("ExtensionA",
+		Optional<IRunnableExtension> extensionAExtensionVariant2 = extensionRegistration.getRunnableExtension(
+				"ExtensionA",
 				"Variant2");
 
-		extensionAPluginVariant1.ifPresent(IRunnablePlugin::run);
-		extensionAPluginVariant2.ifPresent(IRunnablePlugin::run);
+		extensionAExtensionVariant1.ifPresent(IRunnableExtension::run);
+		extensionAExtensionVariant2.ifPresent(IRunnableExtension::run);
 
-		Optional<IPredicatePlugin<String>> emailValidator = pluginRegistration.getPredicatePlugin("ExtensionB",
+		Optional<IPredicateExtension<String>> emailValidator = extensionRegistration.getPredicateExtension("ExtensionB",
 				"EmailValidator");
-		Optional<IPredicatePlugin<String>> urlValidator = pluginRegistration.getPredicatePlugin("ExtensionB",
+		Optional<IPredicateExtension<String>> urlValidator = extensionRegistration.getPredicateExtension("ExtensionB",
 				"UrlValidator");
 
-		emailValidator.ifPresent((IPredicatePlugin<String> plugin) -> plugin.test("user@example.com"));
-		urlValidator.ifPresent((IPredicatePlugin<String> plugin) -> plugin.test("https://example.com"));
+		emailValidator.ifPresent((IPredicateExtension<String> extension) -> extension.test("user@example.com"));
+		urlValidator.ifPresent((IPredicateExtension<String> extension) -> extension.test("https://example.com"));
 
-		// {@link AbstractPredicatePlugin} implementation protects against
+		// {@link AbstractPredicateExtension} implementation protects against
 		// ClassCastException errors
-		Optional<IPredicatePlugin<Integer>> invalidEmailValidator = pluginRegistration.getPredicatePlugin("ExtensionB",
+		Optional<IPredicateExtension<Integer>> invalidEmailValidator = extensionRegistration.getPredicateExtension(
+				"ExtensionB",
 				"EmailValidator");
 
-		invalidEmailValidator.ifPresent((IPredicatePlugin<Integer> plugin) -> plugin.test(1));
+		invalidEmailValidator.ifPresent((IPredicateExtension<Integer> extension) -> extension.test(1));
 
-		// extension C not on the classpath — triggers external plugin discovery
-		Optional<ISupplierPlugin<String>> userGreeter = pluginRegistration.getSupplierPlugin("ExtensionC", "User");
+		// extension C not on the classpath — triggers external extension discovery
+		Optional<ISupplierExtension<String>> userGreeter = extensionRegistration.getSupplierExtension("ExtensionC",
+				"User");
 
-		userGreeter.ifPresent((ISupplierPlugin<String> plugin) -> plugin.get());
+		userGreeter.ifPresent((ISupplierExtension<String> extension) -> extension.get());
 	}
 }

@@ -1,17 +1,17 @@
 package com.seumoose.core.spi;
 
-import com.seumoose.core.interfaces.IPredicatePlugin;
+import com.seumoose.core.interfaces.IPredicateExtension;
 import com.seumoose.core.utility.TypeGuard;
 
 /**
- * A plugin that accepts an input and produces a boolean result.
+ * A extension that accepts an input and produces a boolean result.
  *
- * @param <T> the type of input accepted by the plugin.
+ * @param <T> the type of input accepted by the extension.
  */
-public abstract class AbstractPredicatePlugin<T> implements IPredicatePlugin<T> {
+public abstract class AbstractPredicateExtension<T> implements IPredicateExtension<T> {
 	private final Class<T> inputType;
 
-	protected AbstractPredicatePlugin(Class<T> inputType) {
+	protected AbstractPredicateExtension(Class<T> inputType) {
 		this.inputType = inputType;
 	}
 

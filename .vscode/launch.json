@@ -11,7 +11,7 @@
       "projectName": "launcher",
       "env": {
         "CONFIGURATION_ROOT_PATH": "${workspaceFolder}/config",
-        "PLUGIN_ROOT_PATH": "${workspaceFolder}/plugins"
+        "EXTENSION_ROOT_PATH": "${workspaceFolder}/runtime-extensions"
       }
     }
   ]

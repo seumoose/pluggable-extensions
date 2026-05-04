@@ -1,10 +1,10 @@
 package com.seumoose.extensions.c;
 
-import com.seumoose.core.spi.AbstractSupplierPlugin;
+import com.seumoose.core.spi.AbstractSupplierExtension;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ExtensionC extends AbstractSupplierPlugin<String> {
+public class ExtensionC extends AbstractSupplierExtension<String> {
 	private static final Logger LOGGER = LoggerFactory.getLogger(ExtensionC.class);
 
 	private final ExtensionCConfiguration configuration;

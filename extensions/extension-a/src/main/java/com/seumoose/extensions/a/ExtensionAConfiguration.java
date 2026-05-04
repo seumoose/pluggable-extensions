@@ -2,7 +2,7 @@ package com.seumoose.extensions.a;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.seumoose.core.interfaces.IPluginConfiguration;
+import com.seumoose.core.interfaces.IExtensionConfiguration;
 import lombok.Getter;
 import lombok.ToString;
 
@@ -10,7 +10,7 @@ import java.net.URI;
 
 @Getter
 @ToString
-public class ExtensionAConfiguration implements IPluginConfiguration {
+public class ExtensionAConfiguration implements IExtensionConfiguration {
 	private final URI baseEndpoint;
 	private final int retryLimit;
 

@@ -1,12 +1,12 @@
 package com.seumoose.extensions.b;
 
-import com.seumoose.core.spi.AbstractPredicatePlugin;
+import com.seumoose.core.spi.AbstractPredicateExtension;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.regex.Pattern;
 
-public class ExtensionB extends AbstractPredicatePlugin<String> {
+public class ExtensionB extends AbstractPredicateExtension<String> {
 	private static final Logger LOGGER = LoggerFactory.getLogger(ExtensionB.class);
 
 	private final ExtensionBConfiguration configuration;

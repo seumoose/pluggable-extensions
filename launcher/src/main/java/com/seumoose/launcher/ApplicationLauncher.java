@@ -28,6 +28,13 @@ public class ApplicationLauncher {
 		emailValidator.ifPresent((IPredicatePlugin<String> plugin) -> plugin.test("user@example.com"));
 		urlValidator.ifPresent((IPredicatePlugin<String> plugin) -> plugin.test("https://example.com"));
 
+		// {@link AbstractPredicatePlugin} implementation protects against
+		// ClassCastException errors
+		Optional<IPredicatePlugin<Integer>> invalidEmailValidator = pluginRegistration.getPredicatePlugin("ExtensionB",
+				"EmailValidator");
+
+		invalidEmailValidator.ifPresent((IPredicatePlugin<Integer> plugin) -> plugin.test(1));
+
 		// extension C not on the classpath — triggers external plugin discovery
 		Optional<ISupplierPlugin<String>> userGreeter = pluginRegistration.getSupplierPlugin("ExtensionC", "User");
 

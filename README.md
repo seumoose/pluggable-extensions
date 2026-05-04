@@ -16,6 +16,8 @@ A proof-of-concept project that uses Java's `ServiceLoader` to dynamically disco
 
 Plugins are grouped into families, each representing a type of capability (e.g. a weather plugin family). A family can have multiple variants, each configured independently to target different endpoints, retry limits, etc. At startup, variant configuration files are read from disk, merged with per-family defaults, and used to initialise each plugin instance.
 
+The plugins are implementable either by the example [functional plugin interfaces](/core/src/main/java/com/seumoose/core/interfaces/) or by the [functional plugin abstract classes](/core/src/main/java/com/seumoose/core/spi/), the later of which validates correct typing at runtime and prevents `ClassCastException` errors.
+
 ## Prerequisites
 
 - **JDK 25** — install from [the official site](https://jdk.java.net/) or via Homebrew: `brew install openjdk@25`
@@ -50,7 +52,7 @@ The path must point to an existing directory. Each plugin implementation (family
 From the project root:
 
 ```bash
-mvn package
+mvn clean install
 ```
 
 This produces a thin jar for the launcher along with all dependency jars in `launcher/target/lib/`.
@@ -58,10 +60,10 @@ This produces a thin jar for the launcher along with all dependency jars in `lau
 (optionally) to build the extension outside the classpath [Extension C](/extensions/extension-c/) from the project root and copy the jar to the `plugins` directory:
 
 ```bash
-mkdir -p ./plugins && mvn package -f ./extensions/extension-c/pom.xml && cp ./extensions/extension-c/target/extension-c-1.0-SNAPSHOT.jar ./plugins
+mkdir -p ./plugins && mvn clean install -f ./extensions/extension-c/pom.xml && cp ./extensions/extension-c/target/extension-c-1.0-SNAPSHOT.jar ./plugins
 ```
 
-This produces a thin jar for the external extension simulating
+This produces a thin jar for the external extension simulating runtime loaded JARs compiled externally to the project.
 
 ## Running
 

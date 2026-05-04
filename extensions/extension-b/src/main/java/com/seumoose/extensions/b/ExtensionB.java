@@ -1,18 +1,19 @@
 package com.seumoose.extensions.b;
 
-import com.seumoose.core.interfaces.IPredicatePlugin;
+import com.seumoose.core.spi.AbstractPredicatePlugin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.regex.Pattern;
 
-public class ExtensionB implements IPredicatePlugin<String> {
+public class ExtensionB extends AbstractPredicatePlugin<String> {
 	private static final Logger LOGGER = LoggerFactory.getLogger(ExtensionB.class);
 
 	private final ExtensionBConfiguration configuration;
 	private final Pattern compiledPattern;
 
 	protected ExtensionB(ExtensionBConfiguration configuration) {
+		super(String.class);
 		this.configuration = configuration;
 		this.compiledPattern = Pattern.compile(configuration.getPattern());
 	}
@@ -20,8 +21,8 @@ public class ExtensionB implements IPredicatePlugin<String> {
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
-	public boolean test(String input) {
+	// @Override
+	public boolean process(String input) {
 		boolean matches = compiledPattern.matcher(input).matches();
 		LOGGER.info("Predicate test with pattern {} against input '{}' = {}",
 				configuration.getPattern(), input, matches);

@@ -17,9 +17,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.text.MessageFormat;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -34,6 +38,9 @@ import java.util.stream.Stream;
 public class PluginRegistration {
 	private static final Logger LOGGER = LoggerFactory.getLogger(PluginRegistration.class);
 	private static final Path CONFIGURATION_PATH_ROOT = resolveConfigurationRoot();
+	private static final String USER_HOME = "user.home";
+	private static final String CONFIG_PATH = "config";
+	private static final String EXTENSION_PATH = "plugins";
 	private static final String DEFAULT_CONFIGURATION_FILE = "defaults.json";
 
 	private final Map<String, IPluginProvider<?>> pluginFamilyProviderMapping = new HashMap<>();
@@ -44,12 +51,10 @@ public class PluginRegistration {
 			.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
 	private PluginRegistration() {
-		// registers all plugins and plugin variants - do we want this?
-		// registerPluginProviders(Collections.emptySet());
-
-		// for (IPluginProvider<?> provider : pluginFamilyProviderMapping.values()) {
-		// registerPluginVariants(provider);
-		// }
+		// discover bundled plugins from the application classpath by default at start
+		registerPluginProviders(
+				ServiceLoader.load(IPluginProvider.class),
+				Collections.emptySet());
 	}
 
 	private static class Holder {
@@ -64,7 +69,14 @@ public class PluginRegistration {
 		// lazy provider discovery
 		if (!pluginFamilyProviderMapping.containsKey(family)) {
 			LOGGER.warn("No provider for {} — attempting reconciliation", family);
-			registerPluginProviders(Set.of(family));
+
+			URLClassLoader externalClassLoader = createExternalPluginClassLoader();
+
+			if (externalClassLoader != null) {
+				registerPluginProviders(
+						ServiceLoader.load(IPluginProvider.class, externalClassLoader),
+						Set.of(family));
+			}
 		}
 
 		// lazy variant registration
@@ -91,43 +103,46 @@ public class PluginRegistration {
 	public synchronized <T> Optional<IConsumerPlugin<T>> getConsumerPlugin(String family, String variant) {
 		return getPlugin(family, variant)
 				.filter(IConsumerPlugin.class::isInstance)
-				.map(p -> (IConsumerPlugin<T>) p);
+				.map((IPlugin plugin) -> (IConsumerPlugin<T>) plugin);
 	}
 
 	@SuppressWarnings("unchecked")
 	public synchronized <R> Optional<ISupplierPlugin<R>> getSupplierPlugin(String family, String variant) {
 		return getPlugin(family, variant)
 				.filter(ISupplierPlugin.class::isInstance)
-				.map(p -> (ISupplierPlugin<R>) p);
+				.map((IPlugin plugin) -> (ISupplierPlugin<R>) plugin);
 	}
 
 	@SuppressWarnings("unchecked")
 	public synchronized <T, R> Optional<IFunctionPlugin<T, R>> getFunctionPlugin(String family, String variant) {
 		return getPlugin(family, variant)
 				.filter(IFunctionPlugin.class::isInstance)
-				.map(p -> (IFunctionPlugin<T, R>) p);
+				.map((IPlugin plugin) -> (IFunctionPlugin<T, R>) plugin);
 	}
 
 	@SuppressWarnings("unchecked")
 	public synchronized <T> Optional<IPredicatePlugin<T>> getPredicatePlugin(String family, String variant) {
 		return getPlugin(family, variant)
 				.filter(IPredicatePlugin.class::isInstance)
-				.map(p -> (IPredicatePlugin<T>) p);
+				.map((IPlugin plugin) -> (IPredicatePlugin<T>) plugin);
 	}
 
 	@SuppressWarnings("rawtypes")
-	private void registerPluginProviders(Set<String> filteredProviders) {
-		ServiceLoader<IPluginProvider> pluginProviderLoader = ServiceLoader.load(IPluginProvider.class);
-		Iterator<IPluginProvider> iterator = pluginProviderLoader.iterator();
+	private void registerPluginProviders(ServiceLoader<IPluginProvider> serviceLoader, Set<String> filteredProviders) {
+		Iterator<IPluginProvider> iterator = serviceLoader.iterator();
 
 		while (iterator.hasNext()) {
 			IPluginProvider<?> pluginProvider;
+
+			if (!filteredProviders.isEmpty() && pluginFamilyProviderMapping.keySet().containsAll(filteredProviders)) {
+				break;
+			}
 
 			try {
 				pluginProvider = iterator.next();
 			} catch (ServiceConfigurationError error) {
 				LOGGER.error(
-						"Failed to load plugin provider - check META-INF/services registrations for stale class references - failed with error: {}",
+						"Failed to load plugin provider - check the extension's `resources/META-INF/services` registrations for stale class references - failed with error: {}",
 						error.getMessage());
 
 				continue;
@@ -147,6 +162,45 @@ public class PluginRegistration {
 		}
 	}
 
+	private URLClassLoader createExternalPluginClassLoader() {
+		String envPath = System.getenv(ModuleConstants.PLUGIN_ROOT_PATH);
+		String propertyPath = System.getProperty(ModuleConstants.PLUGIN_ROOT_PATH);
+		Path pluginDirectory = Path.of(System.getProperty(USER_HOME), EXTENSION_PATH);
+
+		if (envPath != null) {
+			pluginDirectory = Path.of(envPath);
+		}
+
+		if (propertyPath != null) {
+			pluginDirectory = Path.of(propertyPath);
+		}
+
+		if (pluginDirectory == null || !Files.isDirectory(pluginDirectory)) {
+			LOGGER.info(
+					"No external plugin directory configured or directory does not exist — skipping external plugin discovery");
+
+			return null;
+		}
+
+		try (Stream<Path> jars = Files.list(pluginDirectory)) {
+			URL[] jarUrls = jars
+					.filter((Path path) -> path.toString().toLowerCase().endsWith(".jar"))
+					.map(PluginRegistration::toUrl)
+					.filter(Optional::isPresent)
+					.map(Optional::get)
+					.toArray(URL[]::new);
+
+			LOGGER.info("External plugin classloader created with {} jar(s) from {}", jarUrls.length, pluginDirectory);
+
+			return new URLClassLoader(jarUrls, PluginRegistration.class.getClassLoader());
+		} catch (IOException exception) {
+			LOGGER.error("Failed to scan external plugin directory {} - skipping external plugin discovery",
+					pluginDirectory);
+
+			return null;
+		}
+	}
+
 	private <T extends IPluginConfiguration> void registerPluginVariants(
 			IPluginProvider<T> pluginProvider) {
 		String pluginFamily = pluginProvider.getFamily();
@@ -159,7 +213,7 @@ public class PluginRegistration {
 		}
 
 		Map<String, IPlugin> pluginVariants = pluginFamilyVariantMapping
-				.computeIfAbsent(pluginFamily, k -> new HashMap<>());
+				.computeIfAbsent(pluginFamily, (String key) -> new HashMap<>());
 
 		// load family default configuration once and cache it
 		if (!pluginFamilyDefaults.containsKey(pluginFamily)) {
@@ -180,7 +234,7 @@ public class PluginRegistration {
 		try (Stream<Path> paths = Files.list(familyDirectory)) {
 			List<Path> filteredPaths = paths
 					.filter(PluginRegistration::isJsonFile)
-					.filter(p -> !p.getFileName().toString().equals(DEFAULT_CONFIGURATION_FILE))
+					.filter(path -> !path.getFileName().toString().equals(DEFAULT_CONFIGURATION_FILE))
 					.toList();
 
 			for (Path path : filteredPaths) {
@@ -194,6 +248,8 @@ public class PluginRegistration {
 				}
 
 				try {
+					// attempt to merge variant config values with default (if available) &
+					// create config instance of the merged node
 					ObjectNode variantNode = (ObjectNode) mapper.readTree(path.toFile());
 					ObjectNode mergedNode = pluginFamilyDefaults.containsKey(pluginFamily)
 							? deepMerge(pluginFamilyDefaults.get(pluginFamily).deepCopy(), variantNode)
@@ -255,7 +311,7 @@ public class PluginRegistration {
 	private static Path resolveConfigurationRoot() {
 		String envPath = System.getenv(ModuleConstants.CONFIGURATION_PATH_ROOT);
 		String propertyPath = System.getProperty(ModuleConstants.CONFIGURATION_PATH_ROOT);
-		Path configPath = Path.of(System.getProperty("user.home"), "config");
+		Path configPath = Path.of(System.getProperty(USER_HOME), CONFIG_PATH);
 
 		if (envPath != null) {
 			configPath = Path.of(envPath);
@@ -281,5 +337,15 @@ public class PluginRegistration {
 		return Files.isRegularFile(path)
 				&& fileName.toLowerCase().endsWith(".json")
 				&& fileName.length() > ".json".length();
+	}
+
+	private static Optional<URL> toUrl(Path path) {
+		try {
+			return Optional.of(path.toUri().toURL());
+		} catch (MalformedURLException exception) {
+			LOGGER.warn("Skipping malformed jar path: {}", path);
+
+			return Optional.empty();
+		}
 	}
 }

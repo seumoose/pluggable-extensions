@@ -10,7 +10,8 @@
       "mainClass": "com.seumoose.launcher.ApplicationLauncher",
       "projectName": "launcher",
       "env": {
-        "CONFIGURATION_ROOT_PATH": "${workspaceFolder}/config"
+        "CONFIGURATION_ROOT_PATH": "${workspaceFolder}/config",
+        "PLUGIN_ROOT_PATH": "${workspaceFolder}/plugins"
       }
     }
   ]

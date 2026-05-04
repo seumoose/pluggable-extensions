@@ -55,14 +55,22 @@ mvn package
 
 This produces a thin jar for the launcher along with all dependency jars in `launcher/target/lib/`.
 
+(optionally) to build the extension outside the classpath [Extension C](/extensions/extension-c/) from the project root and copy the jar to the `plugins` directory:
+
+```bash
+mkdir -p ./plugins && mvn package -f ./extensions/extension-c/pom.xml && cp ./extensions/extension-c/target/extension-c-1.0-SNAPSHOT.jar ./plugins
+```
+
+This produces a thin jar for the external extension simulating
+
 ## Running
 
 ### CLI
 
 ```bash
-java -DCONFIGURATION_ROOT_PATH="$(pwd)/config" -jar launcher/target/launcher-1.0-SNAPSHOT.jar
+java -DCONFIGURATION_ROOT_PATH="$(pwd)/config" -DPLUGIN_ROOT_PATH="$(pwd)/plugins" -jar launcher/target/launcher-1.0-SNAPSHOT.jar
 ```
 
 ### VS Code
 
-The [launch configuration](.vscode/launch.json) sets `CONFIGURATION_ROOT_PATH` to the workspace `config/` directory. Open the Run and Debug panel (`⇧⌘D`), select **Java Application**, and press `F5`.
+The [launch configuration](.vscode/launch.json) sets `CONFIGURATION_ROOT_PATH` to the workspace `config/` and `PLUGIN_ROOT_PATH` to the workspace `plugins/` (if relevant) directories respectively. Open the Run and Debug panel (`⇧⌘D`), select **Java Application**, and press `F5`.

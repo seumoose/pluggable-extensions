@@ -9,6 +9,9 @@ public class ModuleConstants {
 	// configurations
 	public static final String CONFIGURATION_PATH_ROOT = "CONFIGURATION_ROOT_PATH";
 
+	// (String) the external plugin directory root path holding plugin jar files
+	public static final String PLUGIN_ROOT_PATH = "PLUGIN_ROOT_PATH";
+
 	/**
 	 * Private initialiser due to it being a configuration (constants) class.
 	 */

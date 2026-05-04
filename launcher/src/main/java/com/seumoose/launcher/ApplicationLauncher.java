@@ -2,6 +2,7 @@ package com.seumoose.launcher;
 
 import com.seumoose.core.interfaces.IPredicatePlugin;
 import com.seumoose.core.interfaces.IRunnablePlugin;
+import com.seumoose.core.interfaces.ISupplierPlugin;
 import com.seumoose.core.services.PluginRegistration;
 
 import java.io.IOException;
@@ -24,7 +25,12 @@ public class ApplicationLauncher {
 		Optional<IPredicatePlugin<String>> urlValidator = pluginRegistration.getPredicatePlugin("ExtensionB",
 				"UrlValidator");
 
-		emailValidator.ifPresent(plugin -> plugin.test("user@example.com"));
-		urlValidator.ifPresent(plugin -> plugin.test("https://example.com"));
+		emailValidator.ifPresent((IPredicatePlugin<String> plugin) -> plugin.test("user@example.com"));
+		urlValidator.ifPresent((IPredicatePlugin<String> plugin) -> plugin.test("https://example.com"));
+
+		// extension C not on the classpath — triggers external plugin discovery
+		Optional<ISupplierPlugin<String>> userGreeter = pluginRegistration.getSupplierPlugin("ExtensionC", "User");
+
+		userGreeter.ifPresent((ISupplierPlugin<String> plugin) -> plugin.get());
 	}
 }

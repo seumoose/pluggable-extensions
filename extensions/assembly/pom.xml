@@ -42,6 +42,12 @@
             </goals>
             <configuration>
               <createDependencyReducedPom>false</createDependencyReducedPom>
+              <artifactSet>
+                <includes>
+                  <include>com.seumoose:extension-a</include>
+                  <include>com.seumoose:extension-b</include>
+                </includes>
+              </artifactSet>
               <filters>
                 <filter>
                   <artifact>*:*</artifact>
@@ -50,6 +56,9 @@
                     <include>META-INF/services/**</include>
                     <include>**/*.class</include>
                   </includes>
+                  <excludes>
+                    <exclude>module-info.class</exclude>
+                  </excludes>
                 </filter>
               </filters>
               <transformers>

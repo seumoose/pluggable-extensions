@@ -20,9 +20,13 @@
 .project
 effective-pom.xml
 
-## Environments
+## Environments ##
 .env
 
 ## Reporting ##
 ### Unit test / coverage reports ###
 target/
+
+## Application Specific ##
+### Build directories ###
+/plugins

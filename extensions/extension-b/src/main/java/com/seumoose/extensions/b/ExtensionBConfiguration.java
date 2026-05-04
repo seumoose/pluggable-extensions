@@ -1,4 +1,4 @@
-package com.seumoose.extensions;
+package com.seumoose.extensions.b;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;

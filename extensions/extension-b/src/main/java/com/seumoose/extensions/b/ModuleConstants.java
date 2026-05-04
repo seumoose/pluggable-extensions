@@ -1,4 +1,4 @@
-package com.seumoose.extensions;
+package com.seumoose.extensions.b;
 
 /**
  * Module scoped configuration constants.

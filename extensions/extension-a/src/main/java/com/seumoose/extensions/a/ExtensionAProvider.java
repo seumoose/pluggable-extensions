@@ -1,4 +1,4 @@
-package com.seumoose.extensions;
+package com.seumoose.extensions.a;
 
 import com.seumoose.core.interfaces.IPlugin;
 import com.seumoose.core.interfaces.IPluginProvider;

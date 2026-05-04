@@ -1,4 +1,4 @@
-package com.seumoose.extensions;
+package com.seumoose.extensions.a;
 
 import com.seumoose.core.interfaces.IRunnablePlugin;
 import org.slf4j.Logger;

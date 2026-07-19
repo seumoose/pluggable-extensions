@@ -7,7 +7,6 @@ import lombok.Getter;
 import lombok.ToString;
 
 @Getter
-@ToString
 public class ExtensionCConfiguration implements IExtensionConfiguration {
 	private final String greeting;
 	private final String target;

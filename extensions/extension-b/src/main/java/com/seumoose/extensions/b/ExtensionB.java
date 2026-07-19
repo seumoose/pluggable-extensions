@@ -21,7 +21,7 @@ public class ExtensionB extends AbstractPredicateExtension<String> {
 	/**
 	 * {@inheritDoc}
 	 */
-	// @Override
+	@Override
 	public boolean process(String input) {
 		boolean matches = compiledPattern.matcher(input).matches();
 		LOGGER.info("Predicate test with pattern {} against input '{}' = {}",

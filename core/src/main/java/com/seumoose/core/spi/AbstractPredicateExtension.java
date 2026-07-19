@@ -15,6 +15,9 @@ public abstract class AbstractPredicateExtension<T> implements IPredicateExtensi
 		this.inputType = inputType;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public final boolean test(Object input) {
 		return TypeGuard.validate(input, inputType)

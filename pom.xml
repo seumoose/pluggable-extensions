@@ -10,6 +10,7 @@
   <packaging>pom</packaging>
   <name>Pluggable Extensions</name>
   <description>Playground repository for experimenting around with multi-module Maven setup and the ServiceLoader class in Java.</description>
+  <url>https://github.com/seumoose/pluggable-extensions</url>
 
   <properties>
     <java.version>25</java.version>
@@ -19,8 +20,11 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
+    <jacoco.version>0.8.14</jacoco.version>
     <lombok.version>1.18.46</lombok.version>
     <logback.version>1.5.16</logback.version>
+    <mockito.version>5.14.2</mockito.version>
+    <system-stubs.version>2.1.8</system-stubs.version>
   </properties>
 
   <!-- Module declaration -->
@@ -34,15 +38,15 @@
   <dependencyManagement>
     <dependencies>
       <dependency>
-        <groupId>org.projectlombok</groupId>
-        <artifactId>lombok</artifactId>
-        <version>${lombok.version}</version>
-      </dependency>
-
-      <dependency>
         <groupId>com.fasterxml.jackson.core</groupId>
         <artifactId>jackson-databind</artifactId>
         <version>2.18.2</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.projectlombok</groupId>
+        <artifactId>lombok</artifactId>
+        <version>${lombok.version}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
@@ -76,9 +80,44 @@
 
     <!-- compile test -->
     <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>4.11</version>
+      <groupId>org.jacoco</groupId>
+      <artifactId>jacoco-maven-plugin</artifactId>
+      <version>${jacoco.version}</version>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter</artifactId>
+      <version>6.0.3</version>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-core</artifactId>
+      <version>${mockito.version}</version>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-junit-jupiter</artifactId>
+      <version>${mockito.version}</version>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>uk.org.webcompere</groupId>
+      <artifactId>system-stubs-core</artifactId>
+      <version>${system-stubs.version}</version>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>uk.org.webcompere</groupId>
+      <artifactId>system-stubs-jupiter</artifactId>
+      <version>${system-stubs.version}</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
@@ -88,6 +127,12 @@
     <!-- Lock down plugins versions to avoid using Maven defaults -->
     <pluginManagement>
       <plugins>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-jar-plugin</artifactId>
+          <version>3.5.0</version>
+        </plugin>
+
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-clean-plugin</artifactId>
@@ -111,12 +156,6 @@
 
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-jar-plugin</artifactId>
-          <version>3.5.0</version>
-        </plugin>
-
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-project-info-reports-plugin</artifactId>
           <version>3.9.0</version>
         </plugin>
@@ -125,16 +164,65 @@
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-surefire-plugin</artifactId>
           <version>3.5.5</version>
+          <configuration>
+            <!-- TODO: remove this when bytebuddy supports Java 25 -->
+            <argLine>-Dnet.bytebuddy.experimental=true ${argLine}</argLine>
+          </configuration>
         </plugin>
 
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-site-plugin</artifactId>
-          <version>3.21.1</version>
+          <version>3.20.0</version>
         </plugin>
+
+        <plugin>
+          <groupId>org.jacoco</groupId>
+          <artifactId>jacoco-maven-plugin</artifactId>
+          <version>${jacoco.version}</version>
+          <executions>
+            <execution>
+              <id>jacoco-initialize</id>
+              <goals>
+                <goal>prepare-agent</goal>
+              </goals>
+            </execution>
+            <execution>
+              <id>jacoco-site</id>
+              <phase>test</phase>
+              <goals>
+                <goal>report</goal>
+              </goals>
+            </execution>
+          </executions>
+        </plugin>
+
       </plugins>
     </pluginManagement>
+
+    <plugins>
+      <plugin>
+        <groupId>org.jacoco</groupId>
+        <artifactId>jacoco-maven-plugin</artifactId>
+      </plugin>
+    </plugins>
   </build>
+
+  <reporting>
+    <plugins>
+      <plugin>
+        <groupId>org.jacoco</groupId>
+        <artifactId>jacoco-maven-plugin</artifactId>
+        <reportSets>
+          <reportSet>
+            <reports>
+              <report>report</report>
+            </reports>
+          </reportSet>
+        </reportSets>
+      </plugin>
+    </plugins>
+  </reporting>
 
   <repositories>
     <repository>
@@ -146,4 +234,11 @@
       <url>https://repo.maven.apache.org/maven2</url>
     </repository>
   </repositories>
+
+  <distributionManagement>
+    <site>
+      <id>local</id>
+      <url>file://${project.build.directory}/staging</url>
+    </site>
+  </distributionManagement>
 </project>

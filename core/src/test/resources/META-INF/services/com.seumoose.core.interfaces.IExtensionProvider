@@ -1,0 +1,7 @@
+com.seumoose.core.stubs.consumer.StubConsumerProvider
+com.seumoose.core.stubs.function.StubFunctionProvider
+com.seumoose.core.stubs.predicate.StubPredicateProvider
+com.seumoose.core.stubs.runnable.StubRunnableProvider
+com.seumoose.core.stubs.supplier.StubSupplierProvider
+com.seumoose.core.stubs.unconfigured.StubUnconfiguredProvider
+com.seumoose.core.stubs.invalid.NonExistentProvider

@@ -13,6 +13,7 @@
   <artifactId>extensions-assembly</artifactId>
   <packaging>jar</packaging>
   <name>Extensions Assembly</name>
+  <url>${project.parent.url}/extension-assembly</url>
 
   <dependencies>
     <!-- compile internal -->

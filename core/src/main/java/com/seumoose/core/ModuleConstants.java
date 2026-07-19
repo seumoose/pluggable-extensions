@@ -7,7 +7,7 @@ public class ModuleConstants {
 	// configuration constants
 	// (String) the configuration directory root path holding extension variant
 	// configurations
-	public static final String CONFIGURATION_PATH_ROOT = "CONFIGURATION_ROOT_PATH";
+	public static final String CONFIGURATION_ROOT_PATH = "CONFIGURATION_ROOT_PATH";
 
 	// (String) the external extension directory root path holding extension jar
 	// files

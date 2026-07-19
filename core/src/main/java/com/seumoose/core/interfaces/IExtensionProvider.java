@@ -3,6 +3,8 @@ package com.seumoose.core.interfaces;
 /**
  * Simple interface that defines the contract for extension provider
  * implementations.
+ * 
+ * @param <T> the {@link IExtensionConfiguration} implementation.
  */
 public interface IExtensionProvider<T extends IExtensionConfiguration> {
 	/**
@@ -15,10 +17,10 @@ public interface IExtensionProvider<T extends IExtensionConfiguration> {
 
 	/**
 	 * The extension provider's registered configuration class type used to
-	 * instantiate
-	 * and create extension implementation variants.
+	 * instantiate and create extension implementation variants.
 	 * 
-	 * @return the registered configuration of type {@link Class<T>}.
+	 * @return the {@link Class} concrete implementation of a configuration object
+	 *         of type {@link T} extending {@link IExtensionConfiguration}.
 	 */
 	public Class<T> configurationType();
 

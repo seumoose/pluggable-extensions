@@ -15,6 +15,9 @@ public abstract class AbstractConsumerExtension<T> implements IConsumerExtension
 		this.inputType = inputType;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public final void accept(Object input) {
 		TypeGuard.validate(input, inputType)

@@ -1,0 +1,7 @@
+{
+  "value": "merged-value",
+  "nested": {
+    "innerKey": "inner-override",
+    "extra": "extra-value"
+  }
+}

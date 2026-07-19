@@ -2,12 +2,8 @@ package com.seumoose.extensions.b;
 
 import com.seumoose.core.interfaces.IExtension;
 import com.seumoose.core.interfaces.IExtensionProvider;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class ExtensionBProvider implements IExtensionProvider<ExtensionBConfiguration> {
-	private static final Logger LOGGER = LoggerFactory.getLogger(ExtensionBProvider.class);
-
 	/**
 	 * {@inheritDoc}
 	 */

@@ -1,23 +1,26 @@
 {
   "editor.formatOnSave": true,
   "[java]": {
-    "editor.tabSize": 4,
     "editor.defaultFormatter": "redhat.java",
+    "editor.detectIndentation": false,
     "editor.insertSpaces": false,
-    "editor.detectIndentation": false
+    "editor.tabSize": 4
   },
-  "java.completion.importOrder": ["", "javax", "java", "#"],
-  "java.completion.guessMethodArguments": "insertBestGuessedArguments",
-  "java.configuration.updateBuildConfiguration": "interactive",
-  "java.configuration.maven.userSettings": "${workspaceFolder}/.mvn/settings.xml",
-  "java.format.enabled": true,
-  "java.referencesCodeLens.enabled": true,
   "java.codeGeneration.generateComments": true,
-  "java.debug.settings.onBuildFailureProceed": true,
   "java.compile.nullAnalysis.mode": "automatic",
+  "java.completion.guessMethodArguments": "insertBestGuessedArguments",
+  "java.completion.importOrder": ["", "javax", "java", "#"],
+  "java.configuration.maven.userSettings": "${workspaceFolder}/.mvn/settings.xml",
+  "java.configuration.updateBuildConfiguration": "interactive",
+  "java.debug.settings.onBuildFailureProceed": true,
+  "java.format.enabled": true,
   "java.project.referencedLibraries": [
     "target/generated-sources/annotations/**/*.java"
   ],
+  "java.referencesCodeLens.enabled": true,
+  "java.test.config": {
+    "vmArgs": ["-Dnet.bytebuddy.experimental=true"]
+  },
   "[json]": {
     "editor.tabSize": 2,
     "editor.defaultFormatter": "esbenp.prettier-vscode"

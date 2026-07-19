@@ -9,6 +9,7 @@ Playground repository for experimenting with multi-module Maven setup and the `S
 - [Configuration](#configuration)
 - [Building](#building)
 - [Running](#running)
+- [TODO](#todo)
 
 ## About
 
@@ -65,6 +66,16 @@ mkdir -p ./runtime-extensions && mvn clean install -f ./extensions/extension-c/p
 
 This produces a thin jar for the external extension simulating runtime loaded JARs compiled externally to the project.
 
+### Navigating Generated Files
+
+```bash
+mvn package site site:stage
+
+open target/staging/index.html
+```
+
+Jacoco line coverage can then be found under `Project Reports`.
+
 ## Running
 
 ### CLI
@@ -76,3 +87,11 @@ java -DCONFIGURATION_ROOT_PATH="$(pwd)/config" -DEXTENSION_ROOT_PATH="$(pwd)/run
 ### VS Code
 
 The [launch configuration](.vscode/launch.json) sets `CONFIGURATION_ROOT_PATH` to the workspace `config/` and `EXTENSION_ROOT_PATH` to the workspace `extensions/` (if relevant) directories respectively. Open the Run and Debug panel (`⇧⌘D`), select **Java Application**, and press `F5`.
+
+## TODO
+
+- [] Add build configuration (formatting, linting, static code analysis etc.) on PR
+  - [] Use checkstyle code linting i.e. RequireThis rule
+  - [] Find & configure code formatter that can be ran through the CLI
+- [] Use sonar code analysis
+- [] Add extension caching i.e. read every X time out (takes in a Java Time object), read config every time it's requested etc.

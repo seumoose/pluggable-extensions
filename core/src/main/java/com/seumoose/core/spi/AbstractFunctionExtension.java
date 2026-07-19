@@ -18,6 +18,9 @@ public abstract class AbstractFunctionExtension<T, R> implements IFunctionExtens
 		this.responseType = returnType;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public final R apply(Object input) {
 		return TypeGuard.validate(input, inputType)

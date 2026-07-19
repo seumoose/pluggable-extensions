@@ -3,8 +3,7 @@ package com.seumoose.core.interfaces;
 /**
  * Marker interface that all configuration implementations must implement - used
  * by {@link IExtensionProvider} implementations to provide required config
- * values
- * to each extension.
+ * values to each extension.
  */
 public interface IExtensionConfiguration {
 	/**

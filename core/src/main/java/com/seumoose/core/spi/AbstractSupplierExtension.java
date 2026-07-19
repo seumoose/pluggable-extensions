@@ -17,6 +17,9 @@ public abstract class AbstractSupplierExtension<R> implements ISupplierExtension
 		this.responseType = responseType;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public final R get() {
 		return Optional.ofNullable(process())

@@ -13,14 +13,33 @@ public abstract class AbstractFunctionExtension<T, R> implements IFunctionExtens
 	private final Class<T> inputType;
 	private final Class<R> responseType;
 
-	protected AbstractFunctionExtension(Class<T> inputType, Class<R> returnType) {
+	/**
+	 * Constructs a new function extension bound to the given input and response
+	 * types used to validate values at runtime.
+	 *
+	 * @param inputType    the {@link Class} of the input type {@link T}.
+	 * @param responseType the {@link Class} of the response type {@link R}.
+	 */
+	protected AbstractFunctionExtension(Class<T> inputType, Class<R> responseType) {
 		this.inputType = inputType;
-		this.responseType = returnType;
+		this.responseType = responseType;
 	}
 
+	// TODO: return optional?
 	/**
-	 * {@inheritDoc}
+	 * Validates that {@code input} is an instance of {@link T} before
+	 * delegating to {@link #process(Object)}, then validates that the
+	 * resulting response is an instance of {@link R}.
+	 *
+	 * If either validation fails (including when {@code input} is not an
+	 * instance of {@link T}), {@code null} is returned instead of throwing.
+	 *
+	 * @param input the input to process, expected to be an instance of {@link T}.
+	 * 
+	 * @return the processed result of type {@link R}, or {@code null} if the
+	 *         input or the produced result did not match the expected type.
 	 */
+
 	@Override
 	public final R apply(Object input) {
 		return TypeGuard.validate(input, inputType)
@@ -29,5 +48,12 @@ public abstract class AbstractFunctionExtension<T, R> implements IFunctionExtens
 				.orElse(null);
 	}
 
+	/**
+	 * Processes the validated input and produces a result.
+	 *
+	 * @param input the input to process, guaranteed to be an instance of {@link T}.
+	 * 
+	 * @return the result of processing {@code input}.
+	 */
 	protected abstract R process(T input);
 }

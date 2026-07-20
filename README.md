@@ -90,8 +90,9 @@ The [launch configuration](.vscode/launch.json) sets `CONFIGURATION_ROOT_PATH` t
 
 ## TODO
 
-- [] Add build configuration (formatting, linting, static code analysis etc.) on PR
-  - [] Use checkstyle code linting i.e. RequireThis rule
-  - [] Find & configure code formatter that can be ran through the CLI
-- [] Use sonar code analysis
-- [] Add extension caching i.e. read every X time out (takes in a Java Time object), read config every time it's requested etc.
+- Add build configuration (formatting, linting, static code analysis etc.) on PR
+  - Use checkstyle code linting i.e. RequireThis rule
+  - Find & configure code formatter that can be ran through the CLI
+- Use sonar code analysis
+- Add extension caching i.e. read every X time out (takes in a Java Time object), read config every time it's requested etc.
+- Consider making the Service Provider Interfaces under [spi](./core/src/main/java/com/seumoose/core/spi/) return errors instead of failing silently // returning false etc. by default - wrap all processes in an optional / some sort of observable such that they can be checked for completeness etc.?
